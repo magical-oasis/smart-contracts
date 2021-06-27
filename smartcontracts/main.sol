@@ -8,7 +8,7 @@ contract DefiMarket {
     address payable public minter;
     mapping (address => uint) public balances;
     mapping (address => uint) public items;
-    mapping (address => address) public tradeReceivers;
+    mapping (address => address payable) public tradeReceivers;
 
 
     constructor() public payable {
@@ -16,14 +16,21 @@ contract DefiMarket {
     }
     
 
-    function wakeup(address payable receiver)  public payable
+    function wakeup(address payable seller)  public payable
     {
         require(msg.sender == minter, "Only the owner can call this.");
-
-        receiver.transfer(1);
+        
+        uint amountToSend = balances[seller];
+        address payable receiver = tradeReceivers[seller];
+        
+        receiver.transfer(amountToSend);
+        
+        balances[seller] = 0;
+        tradeReceivers[seller] = address(0);
+        items[seller] = 0;
     }
     
-    function addTradeOffer(address receiver, uint256 itemId)  public payable
+    function addTradeOffer(address payable receiver, uint256 itemId)  public payable
     {
         require(msg.value != 0, "You need to send ETH to buy a skin!");
 
@@ -61,7 +68,11 @@ contract DefiMarket {
     }
     
     function deposit() public payable {
+        require(msg.value != 0, "Useless to deposit 0 ETH");
+
         payable(address(this)).transfer(msg.value);
     }
     
+    receive() external payable {}
+
 }
