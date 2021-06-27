@@ -5,30 +5,55 @@ pragma solidity ^0.6.0;
 
 contract DefiMarket {
   
-    //address payable public minter;
-    //mapping (address => uint) public balances;
+    address payable public minter;
+    mapping (address => uint) public balances;
+    mapping (address => uint) public items;
+    mapping (address => address) public tradeReceivers;
 
-    // Events allow light clients to react on
-    // changes efficiently.
-    //event Sent(address from, address to, uint amount);
 
     constructor() public payable {
         minter = msg.sender;
     }
     
-    /**
-     * Create a Chainlink request to retrieve API response, find the target
-     * data, then multiply by 1000000000000000000 (to remove decimal places from data).
-     */
+
     function wakeup(address payable receiver)  public payable
     {
-        require(msg.sender != minter, "Only the owner can call this.");
+        require(msg.sender == minter, "Only the owner can call this.");
 
         receiver.transfer(1);
     }
+    
+    function addTradeOffer(address receiver, uint256 itemId)  public payable
+    {
+        require(msg.value != 0, "You need to send ETH to buy a skin!");
+
+        payable(address(this)).transfer(msg.value);
+        
+        balances[msg.sender] = msg.value;
+        items[msg.sender] = itemId;
+        tradeReceivers[msg.sender] = receiver;
+    }
+    
+    function balanceOf(address _tokenHolder) public view returns (uint) {
+        return balances[_tokenHolder];
+    }
+    
+    function getMyBalance() public view returns (uint) {
+        return balances[msg.sender];
+    }
+    
+    function getMyTradeReceiver() public view returns (address) {
+        return tradeReceivers[msg.sender];
+    }
+    
+    function getMyTradeItem() public view returns (uint) {
+        return items[msg.sender];
+    }
      
     function withdraw(uint amount) public payable {
-         msg.sender.transfer(amount);
+        require(msg.sender == minter, "Only the owner can call this.");
+
+        msg.sender.transfer(amount);
     }
     
     function getContractBalance() public view returns(uint){
@@ -39,7 +64,4 @@ contract DefiMarket {
         payable(address(this)).transfer(msg.value);
     }
     
-    receive() external payable { }
-
-    // function withdrawLink() external {} - Implement a withdraw function to avoid locking your LINK in the contract
 }
