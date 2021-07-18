@@ -12,3 +12,4 @@ npm install -g truffle
 ```bash
 truffle version
 ```
+3. Download ganache https://www.trufflesuite.com/docs/ganache/quickstart
