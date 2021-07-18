@@ -6,7 +6,7 @@ contract DefiMarket {
   
     address payable public minter;
     mapping (address => uint) public balances;
-    mapping (address => uint) public items;
+    mapping (address => string) public items;
     mapping (address => address payable) public tradeReceivers;
 
 
@@ -15,21 +15,21 @@ contract DefiMarket {
     }
     
 
-    function wakeup(address payable seller)  public payable
+    function wakeup(address payable buyer)  public payable
     {
         require(msg.sender == minter, "Only the owner can call this.");
         
-        uint amountToSend = balances[seller];
-        address payable receiver = tradeReceivers[seller];
+        uint amountToSend = balances[buyer];
+        address payable receiver = tradeReceivers[buyer];
         
         receiver.transfer(amountToSend);
         
-        balances[seller] = 0;
-        tradeReceivers[seller] = address(0);
-        items[seller] = 0;
+        balances[buyer] = 0;
+        tradeReceivers[buyer] = address(0);
+        items[buyer] = "";
     }
     
-    function addTradeOffer(address payable receiver, uint256 itemId)  public payable
+    function addTradeOffer(address payable receiver, string memory itemId)  public payable
     {
         require(msg.value != 0, "You need to send ETH to buy a skin!");
 
@@ -48,14 +48,10 @@ contract DefiMarket {
         return balances[msg.sender];
     }
     
-    function getMyTradeReceiver() public view returns (address) {
-        return tradeReceivers[msg.sender];
+    function getMyTrade() public view returns (string memory, address, uint) {
+        return (items[msg.sender], tradeReceivers[msg.sender], balances[msg.sender]);
     }
-    
-    function getMyTradeItem() public view returns (uint) {
-        return items[msg.sender];
-    }
-     
+
     function withdraw(uint amount) public payable {
         require(msg.sender == minter, "Only the owner can call this.");
 
