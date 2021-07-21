@@ -6,7 +6,7 @@ contract DefiMarket {
   
     address payable public minter;
     mapping (address => uint) public balances;
-    mapping (address => uint8) public listingIds;
+    mapping (address => uint) public listingIds;
     mapping (address => address payable) public tradeReceivers;
 
 
@@ -29,7 +29,7 @@ contract DefiMarket {
         listingIds[buyer] = 0;
     }
     
-    function addTradeOffer(address payable receiver, uint8 listingId)  public payable
+    function addTradeOffer(address payable receiver, uint listingId)  public payable
     {
         require(msg.value != 0, "You need to send ETH to buy a skin!");
 
