@@ -3,9 +3,13 @@ pragma solidity ^0.6.0;
 
 contract DefiMarket {
     address payable public minter;
+
+    // TODO(marco) create struct for this
+    // TODO(marco) support one than more trade
     mapping(address => uint256) public balances;
     mapping(address => uint256) public listingIds;
     mapping(address => address payable) public tradeReceivers;
+
     mapping(uint256 => address[]) public listingIdsWithBuyingOffers;
 
     constructor() public payable {
@@ -37,6 +41,12 @@ contract DefiMarket {
         listingIds[msg.sender] = listingId;
         tradeReceivers[msg.sender] = receiver;
         listingIdsWithBuyingOffers[listingId].push(msg.sender);
+    }
+
+    function getNumberOfBuyingOfferForListingId(uint256 listingId) public view returns (uint)
+    {
+        uint length = listingIdsWithBuyingOffers[listingId].length;
+        return length;
     }
 
     function withdraw(uint256 amount) public payable {
