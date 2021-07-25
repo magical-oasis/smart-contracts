@@ -45,6 +45,8 @@ contract DefiMarket {
         receiver.transfer(amountToSend);
     }
 
+    // TODO(marco): remove trade offer
+    // What do we do when an other trade offer is already there for an item? can we have more than one? do people need to cancel them or we return the money after 7 days?
     // TODO(marco): validate duplicate offer
     function addTradeOffer(address payable ethAddressOfSeller, uint256 listingId)
         public
