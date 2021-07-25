@@ -4,8 +4,14 @@ pragma solidity ^0.8.6;
 contract DefiMarket {
     address payable public minter;
 
-    // TODO(marco) create struct for this
-    // TODO(marco) support one than more trade
+    struct TradeOffer {
+        uint256 priceInWei;
+        uint256 listingId;
+        address payable ethAddrOfSellers;
+    }
+
+    mapping(address => TradeOffer[]) public buyerPendingPurchases;
+
     mapping(address => uint256) public priceInWei;
     mapping(address => uint256) public listingIds;
     mapping(address => address payable) public ethAddrOfSellers;
@@ -16,20 +22,31 @@ contract DefiMarket {
         minter = payable(msg.sender);
     }
 
-    function wakeup(address payable buyer) public payable {
+    function wakeup(address payable buyer, uint256 listingId) public payable {
         require(msg.sender == minter, "Only the owner can call this.");
 
-        uint256 amountToSend = priceInWei[buyer];
-        address payable receiver = ethAddrOfSellers[buyer];
+        uint256 amountToSend = 0;
+        address payable receiver = payable(address(0));
+        uint256 itemIndex = 0;
+
+        uint256 length = buyerPendingPurchases[buyer].length;
+        for (uint256 i = 0; i < length; i++) {
+            TradeOffer memory offer = buyerPendingPurchases[buyer][i];
+            if (offer.listingId == listingId) {
+               amountToSend = offer.priceInWei; 
+               receiver = offer.ethAddrOfSellers;
+               itemIndex = i;
+               break;
+            }
+        }
+
+        delete buyerPendingPurchases[buyer][itemIndex];
 
         receiver.transfer(amountToSend);
-
-        priceInWei[buyer] = 0;
-        ethAddrOfSellers[buyer] = payable(address(0));
-        listingIds[buyer] = 0;
     }
 
-    function addTradeOffer(address payable receiver, uint256 listingId)
+    // TODO(marco): validate duplicate offer
+    function addTradeOffer(address payable ethAddressOfSeller, uint256 listingId)
         public
         payable
     {
@@ -37,10 +54,15 @@ contract DefiMarket {
 
         payable(address(this)).transfer(msg.value);
 
-        priceInWei[msg.sender] = msg.value;
-        listingIds[msg.sender] = listingId;
-        ethAddrOfSellers[msg.sender] = receiver;
+        buyerPendingPurchases[msg.sender].push(TradeOffer({priceInWei: msg.value, listingId: listingId, ethAddrOfSellers: ethAddressOfSeller}));
+
         listingIdsWithBuyingOffers[listingId].push(msg.sender);
+    }
+
+    function getNumberOfPendingPurchasesForBuyer(address buyer) public view returns (uint)
+    {
+        uint length = buyerPendingPurchases[buyer].length;
+        return length;
     }
 
     function getNumberOfBuyingOfferForListingId(uint256 listingId) public view returns (uint)
