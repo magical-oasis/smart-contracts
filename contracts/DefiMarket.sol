@@ -1,31 +1,31 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.6.0;
+pragma solidity ^0.8.6;
 
 contract DefiMarket {
     address payable public minter;
 
     // TODO(marco) create struct for this
     // TODO(marco) support one than more trade
-    mapping(address => uint256) public balances;
+    mapping(address => uint256) public priceInWei;
     mapping(address => uint256) public listingIds;
-    mapping(address => address payable) public tradeReceivers;
+    mapping(address => address payable) public ethAddrOfSellers;
 
     mapping(uint256 => address[]) public listingIdsWithBuyingOffers;
 
-    constructor() public payable {
-        minter = msg.sender;
+    constructor() {
+        minter = payable(msg.sender);
     }
 
     function wakeup(address payable buyer) public payable {
         require(msg.sender == minter, "Only the owner can call this.");
 
-        uint256 amountToSend = balances[buyer];
-        address payable receiver = tradeReceivers[buyer];
+        uint256 amountToSend = priceInWei[buyer];
+        address payable receiver = ethAddrOfSellers[buyer];
 
         receiver.transfer(amountToSend);
 
-        balances[buyer] = 0;
-        tradeReceivers[buyer] = address(0);
+        priceInWei[buyer] = 0;
+        ethAddrOfSellers[buyer] = payable(address(0));
         listingIds[buyer] = 0;
     }
 
@@ -37,9 +37,9 @@ contract DefiMarket {
 
         payable(address(this)).transfer(msg.value);
 
-        balances[msg.sender] = msg.value;
+        priceInWei[msg.sender] = msg.value;
         listingIds[msg.sender] = listingId;
-        tradeReceivers[msg.sender] = receiver;
+        ethAddrOfSellers[msg.sender] = receiver;
         listingIdsWithBuyingOffers[listingId].push(msg.sender);
     }
 
@@ -52,7 +52,7 @@ contract DefiMarket {
     function withdraw(uint256 amount) public payable {
         require(msg.sender == minter, "Only the owner can call this.");
 
-        msg.sender.transfer(amount);
+        payable(msg.sender).transfer(amount);
     }
 
     function getContractBalance() public view returns (uint256) {
