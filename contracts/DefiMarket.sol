@@ -12,7 +12,7 @@ contract DefiMarket {
 
     mapping(address => TradeOffer[]) public buyerPendingPurchases;
 
-    mapping(uint256 => address[]) public listingIdsWithBuyingOffers;
+    mapping(uint256 => address[]) public listingIdToBuyersAddress;
 
     constructor() {
         minter = payable(msg.sender);
@@ -54,7 +54,7 @@ contract DefiMarket {
 
         buyerPendingPurchases[msg.sender].push(TradeOffer({priceInWei: msg.value, listingId: listingId, ethAddrOfSellers: ethAddressOfSeller}));
 
-        listingIdsWithBuyingOffers[listingId].push(msg.sender);
+        listingIdToBuyersAddress[listingId].push(msg.sender);
     }
 
     function getNumberOfPendingPurchasesForBuyer(address buyer) public view returns (uint)
@@ -65,7 +65,7 @@ contract DefiMarket {
 
     function getNumberOfBuyingOfferForListingId(uint256 listingId) public view returns (uint)
     {
-        uint length = listingIdsWithBuyingOffers[listingId].length;
+        uint length = listingIdToBuyersAddress[listingId].length;
         return length;
     }
 
