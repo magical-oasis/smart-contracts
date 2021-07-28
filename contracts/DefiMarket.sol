@@ -12,10 +12,6 @@ contract DefiMarket {
 
     mapping(address => TradeOffer[]) public buyerPendingPurchases;
 
-    mapping(address => uint256) public priceInWei;
-    mapping(address => uint256) public listingIds;
-    mapping(address => address payable) public ethAddrOfSellers;
-
     mapping(uint256 => address[]) public listingIdsWithBuyingOffers;
 
     constructor() {
