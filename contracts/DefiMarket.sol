@@ -38,6 +38,10 @@ contract DefiMarket {
 
         delete buyerPendingPurchases[buyer][itemIndex];
 
+        // TODO(marco): take 2% fees before sending money
+        // put it in a map
+        // mapping (address => uint) public balances;
+        // balances[minter] = 2%;
         receiver.transfer(amountToSend);
     }
 
@@ -52,7 +56,9 @@ contract DefiMarket {
 
         payable(address(this)).transfer(msg.value);
 
-        buyerPendingPurchases[msg.sender].push(TradeOffer({priceInWei: msg.value, listingId: listingId, ethAddrOfSellers: ethAddressOfSeller}));
+        buyerPendingPurchases[msg.sender].push(
+            TradeOffer({priceInWei: msg.value, listingId: listingId, ethAddrOfSellers: ethAddressOfSeller})
+        );
 
         listingIdToBuyersAddress[listingId].push(msg.sender);
     }
