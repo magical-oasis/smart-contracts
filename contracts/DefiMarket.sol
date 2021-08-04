@@ -52,12 +52,13 @@ contract DefiMarket {
         payable
     {
         require(msg.value != 0, "You need to send ETH to buy a skin!");
-        //uint nbOfPendingPurchases = getNumberOfPendingPurchasesForBuyer(msg.sender);
-        //for (uint i = 0; i < nbOfPendingPurchases; i++) {
-        //    if (listingId == buyerPendingPurchases[msg.sender][i].listingId) {
-        //        require(false, "Trade offer already exist for this item");
-        //    }
-        //} 
+
+        uint nbOfPendingPurchases = getNumberOfPendingPurchasesForBuyer(msg.sender);
+        for (uint i = 0; i < nbOfPendingPurchases; i++) {
+            if (listingId == buyerPendingPurchases[msg.sender][i].listingId) {
+                require(false, "Trade offer already exist for this item");
+            }
+        } 
 
         payable(address(this)).transfer(msg.value);
 

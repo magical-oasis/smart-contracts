@@ -33,4 +33,21 @@ contract('DefiMarket', function(accounts) {
     const x = await instance.getContractBalance.call()
     assert.equal(x, 1)
   })
+
+  it('Add a duplicate trade offer should fail', async function() {
+    let errorCaught = false
+
+    const instance = await DefiMarket.deployed()
+
+    try {
+      await instance.addTradeOffer(accounts[1], 1234, { from: accounts[0], value: 1 })
+    } catch (error) {
+      assert.isTrue(true)
+      errorCaught = true
+    }
+
+    if (!errorCaught) {
+      assert.isTrue(false)
+    }
+  })
 })
