@@ -45,7 +45,6 @@ contract DefiMarket {
         receiver.transfer(amountToSend);
     }
 
-    // TODO(marco): remove trade offer
     // What do we do when an other trade offer is already there for an item? can we have more than one? do people need to cancel them or we return the money after 7 days?
     // TODO(marco): validate duplicate offer
     function addTradeOffer(address payable ethAddressOfSeller, uint256 listingId)
@@ -53,6 +52,12 @@ contract DefiMarket {
         payable
     {
         require(msg.value != 0, "You need to send ETH to buy a skin!");
+        //uint nbOfPendingPurchases = getNumberOfPendingPurchasesForBuyer(msg.sender);
+        //for (uint i = 0; i < nbOfPendingPurchases; i++) {
+        //    if (listingId == buyerPendingPurchases[msg.sender][i].listingId) {
+        //        require(false, "Trade offer already exist for this item");
+        //    }
+        //} 
 
         payable(address(this)).transfer(msg.value);
 
@@ -75,20 +80,14 @@ contract DefiMarket {
         return length;
     }
 
-    function withdraw(uint256 amount) public payable {
-        require(msg.sender == minter, "Only the owner can call this.");
+    //function withdraw(uint256 amount) public payable {
+    //    require(msg.sender == minter, "Only the owner can call this.");
 
-        payable(msg.sender).transfer(amount);
-    }
+    //    payable(msg.sender).transfer(amount);
+    //}
 
     function getContractBalance() public view returns (uint256) {
         return address(this).balance;
-    }
-
-    function deposit() public payable {
-        require(msg.value != 0, "Useless to deposit 0 ETH");
-
-        payable(address(this)).transfer(msg.value);
     }
 
     receive() external payable {}
