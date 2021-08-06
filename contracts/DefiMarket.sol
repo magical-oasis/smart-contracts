@@ -2,7 +2,12 @@
 pragma solidity ^0.8.6;
 
 contract DefiMarket {
+
+    uint feesPercentage = 3;
+
     address payable public minter;
+
+    mapping(address => uint256) public availableBalances;
 
     struct TradeOffer {
         uint256 priceInWei;
@@ -38,15 +43,15 @@ contract DefiMarket {
 
         delete buyerPendingPurchases[buyer][itemIndex];
 
-        // TODO(marco): take 2% fees before sending money
-        // put it in a map
-        // mapping (address => uint) public balances;
-        // balances[minter] = 2%;
-        receiver.transfer(amountToSend);
+        // Put the money in the good balance
+        // And take the fees
+        uint feesAmount = amountToSend * feesPercentage / 100;
+        uint amountWithfeesRemoved = amountToSend - feesAmount;
+        availableBalances[receiver] += amountWithfeesRemoved;
+        availableBalances[minter] += feesAmount;
     }
 
     // What do we do when an other trade offer is already there for an item? can we have more than one? do people need to cancel them or we return the money after 7 days?
-    // TODO(marco): validate duplicate offer
     function addTradeOffer(address payable ethAddressOfSeller, uint256 listingId)
         public
         payable
@@ -81,11 +86,11 @@ contract DefiMarket {
         return length;
     }
 
-    //function withdraw(uint256 amount) public payable {
-    //    require(msg.sender == minter, "Only the owner can call this.");
+    function withdrawMyAvailableBalance(uint256 amount) public payable {
+        require(availableBalances[msg.sender] > amount, "can't withdraw more than your balance");
 
-    //    payable(msg.sender).transfer(amount);
-    //}
+        payable(address(msg.sender)).transfer(amount);
+    }
 
     function getContractBalance() public view returns (uint256) {
         return address(this).balance;
