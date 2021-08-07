@@ -52,6 +52,7 @@ contract DefiMarket {
     }
 
     // What do we do when an other trade offer is already there for an item? can we have more than one? do people need to cancel them or we return the money after 7 days?
+    // TODO(marco) if person send 0 eth but have balance use balance
     function addTradeOffer(address payable ethAddressOfSeller, uint256 listingId)
         public
         payable
