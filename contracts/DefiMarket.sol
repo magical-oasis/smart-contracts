@@ -41,11 +41,11 @@ contract DefiMarket {
             }
         }
 
-        delete buyerPendingPurchases[buyer][itemIndex];
 
         // refund when oders have an offer but not accepted
         // TODO(marco) remove others offer before deleting here and money in their balance
         delete listingIdToBuyersAddress[listingId];
+        delete buyerPendingPurchases[buyer][itemIndex];
 
         // Put the money in the good balance
         // And take the fees
@@ -95,7 +95,9 @@ contract DefiMarket {
 
     // TODO fix this
     function withdrawMyAvailableBalance() public payable {
-        payable(address(this)).transfer(availableBalances[msg.sender]);
+        require(availableBalances[msg.sender] != 0, "You need to have ETH in your available balance to cashout!");
+
+        payable(msg.sender).transfer(availableBalances[msg.sender]);
         availableBalances[msg.sender] = 0;
     }
 
