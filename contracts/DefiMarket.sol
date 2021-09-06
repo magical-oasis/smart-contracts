@@ -43,28 +43,34 @@ contract DefiMarket {
 
         delete buyerPendingPurchases[buyer][itemIndex];
 
+        // refund when oders have an offer but not accepted
+        // TODO(marco) remove others offer before deleting here and money in their balance
+        delete listingIdToBuyersAddress[listingId];
+
         // Put the money in the good balance
         // And take the fees
         uint feesAmount = amountToSend * feesPercentage / 100;
         uint amountWithfeesRemoved = amountToSend - feesAmount;
+    
         availableBalances[receiver] += amountWithfeesRemoved;
         availableBalances[minter] += feesAmount;
     }
 
-    // What do we do when an other trade offer is already there for an item? can we have more than one? do people need to cancel them or we return the money after 7 days?
-    // TODO(marco) if person send 0 eth but have balance use balance
+    // Idea for later(marco) if the is no msg.value and if there is a parameter with the wei to use for the item than take it in the balance
     function addTradeOffer(address payable ethAddressOfSeller, uint256 listingId)
         public
         payable
     {
         require(msg.value != 0, "You need to send ETH to buy a skin!");
 
-        uint nbOfPendingPurchases = getNumberOfPendingPurchasesForBuyer(msg.sender);
-        for (uint i = 0; i < nbOfPendingPurchases; i++) {
-            if (listingId == buyerPendingPurchases[msg.sender][i].listingId) {
-                require(false, "Trade offer already exist for this item");
-            }
-        } 
+        require(getNumberOfBuyingOfferForListingId(listingId) == 0, "There is already an offer for this item");
+
+        //uint nbOfPendingPurchases = getNumberOfPendingPurchasesForBuyer(msg.sender);
+        //for (uint i = 0; i < nbOfPendingPurchases; i++) {
+        //    if (listingId == buyerPendingPurchases[msg.sender][i].listingId) {
+        //        require(false, "Trade offer already exist for this item");
+        //    }
+        //} 
 
         payable(address(this)).transfer(msg.value);
 
@@ -87,10 +93,10 @@ contract DefiMarket {
         return length;
     }
 
-    function withdrawMyAvailableBalance(uint256 amount) public payable {
-        require(availableBalances[msg.sender] > amount, "can't withdraw more than your balance");
-
-        payable(address(msg.sender)).transfer(amount);
+    // TODO fix this
+    function withdrawMyAvailableBalance() public payable {
+        payable(address(this)).transfer(availableBalances[msg.sender]);
+        availableBalances[msg.sender] = 0;
     }
 
     function getContractBalance() public view returns (uint256) {
