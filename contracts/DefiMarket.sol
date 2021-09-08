@@ -19,6 +19,10 @@ contract DefiMarket {
 
     mapping(uint256 => address[]) public listingIdToBuyersAddress;
 
+
+    event Withdraw(address indexed _from, address indexed _to, uint _value);
+
+
     constructor() {
         minter = payable(msg.sender);
     }
@@ -65,13 +69,6 @@ contract DefiMarket {
 
         require(getNumberOfBuyingOfferForListingId(listingId) == 0, "There is already an offer for this item");
 
-        //uint nbOfPendingPurchases = getNumberOfPendingPurchasesForBuyer(msg.sender);
-        //for (uint i = 0; i < nbOfPendingPurchases; i++) {
-        //    if (listingId == buyerPendingPurchases[msg.sender][i].listingId) {
-        //        require(false, "Trade offer already exist for this item");
-        //    }
-        //} 
-
         payable(address(this)).transfer(msg.value);
 
         buyerPendingPurchases[msg.sender].push(
@@ -96,6 +93,7 @@ contract DefiMarket {
     // TODO fix this
     function withdrawMyAvailableBalance() public payable {
         require(availableBalances[msg.sender] != 0, "You need to have ETH in your available balance to cashout!");
+        emit Withdraw(minter, msg.sender, availableBalances[msg.sender]);
 
         payable(msg.sender).transfer(availableBalances[msg.sender]);
         availableBalances[msg.sender] = 0;
