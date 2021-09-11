@@ -27,11 +27,11 @@ contract DefiMarket {
         minter = payable(msg.sender);
     }
 
-    function wakeup(address payable buyer, uint256 listingId) public payable {
+    function wakeup(address buyer, uint256 listingId) public payable {
         require(msg.sender == minter, "Only the owner can call this.");
 
         uint256 amountToSend = 0;
-        address payable receiver = payable(address(0));
+        address receiver = address(0);
         uint256 itemIndex = 0;
 
         uint256 length = buyerPendingPurchases[buyer].length;
@@ -45,9 +45,6 @@ contract DefiMarket {
             }
         }
 
-
-        // refund when oders have an offer but not accepted
-        // TODO(marco) remove others offer before deleting here and money in their balance
         delete listingIdToBuyersAddress[listingId];
         delete buyerPendingPurchases[buyer][itemIndex];
 
@@ -90,7 +87,6 @@ contract DefiMarket {
         return length;
     }
 
-    // TODO fix this
     function withdrawMyAvailableBalance() public payable {
         require(availableBalances[msg.sender] != 0, "You need to have ETH in your available balance to cashout!");
         emit Withdraw(minter, msg.sender, availableBalances[msg.sender]);
