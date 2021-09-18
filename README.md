@@ -15,6 +15,14 @@ truffle version
 3. Download ganache https://www.trufflesuite.com/docs/ganache/quickstart
 
 
+
+
+
+
+
+Development command
+
+```
 truffle migrate --reset --network rinkeby
 
 
@@ -27,3 +35,4 @@ instance.addTradeOffer(accounts[1], 123, {from: accounts[0], value: 1})
 instance.listingIdToBuyersAddress.call(123, 0)
 
 instance.getNumberOfBuyingOfferForListingId.call(123)
+```
