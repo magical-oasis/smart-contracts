@@ -15,6 +15,9 @@ truffle version
 3. Download ganache https://www.trufflesuite.com/docs/ganache/quickstart
 
 
+truffle migrate --reset --network rinkeby
+
+
 let instance = await DefiMarket.deployed()
 
 let accounts = await web3.eth.getAccounts()

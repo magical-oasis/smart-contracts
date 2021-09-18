@@ -1,7 +1,16 @@
+const HDWalletProvider = require('@truffle/hdwallet-provider')
+
 
 module.exports = {
   networks: {
-
+    rinkeby: {
+      provider: function () {
+          return new HDWalletProvider(process.env.WALLET_SECRET_KEY, process.env.ARB_PROVIDER_RINKEBY, 0)
+      },
+      network_id: '*',
+      gas: 4500000,
+      gasPrice: 10000000000,
+    },
   },
 
   // Set default mocha options here, use special reporters etc.
