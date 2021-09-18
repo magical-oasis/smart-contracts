@@ -1,4 +1,6 @@
 First deployment in dev rinkeby 
+
+```bash
    Deploying 'DefiMarket'
    ----------------------
    > transaction hash:    0x5f677a57c361bd3c1aad0224307b8abdd98f046ce4968681bcb7887ab777768e
@@ -12,3 +14,4 @@ First deployment in dev rinkeby
    > gas price:           10 gwei
    > value sent:          0 ETH
    > total cost:          0.01152553 ETH
+```
