@@ -31,9 +31,8 @@ jobs:
       - name: Install depedencies
         run: npm install
 
-      # Build frontend
-      - name: Build frontend
-        run: truffle migrate --network rinkeb
+      - name: Migrate contract to rinkeby
+        run: npm run migrate_rinkeby
         env:
           WALLET_SECRET_KEY: ${{ secrets.WALLET_SECRET_KEY }}
           ARB_PROVIDER_RINKEBY: ${{ secrets.ARB_PROVIDER_RINKEBY }}

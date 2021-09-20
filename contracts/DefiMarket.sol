@@ -48,8 +48,7 @@ contract DefiMarket {
         delete listingIdToBuyersAddress[listingId];
         delete buyerPendingPurchases[buyer][itemIndex];
 
-        // Put the money in the good balance
-        // And take the fees
+        // Put the money in the good balance and take the fees
         uint feesAmount = amountToSend * feesPercentage / 100;
         uint amountWithfeesRemoved = amountToSend - feesAmount;
     
@@ -89,6 +88,7 @@ contract DefiMarket {
 
     function withdrawMyAvailableBalance() public payable {
         require(availableBalances[msg.sender] != 0, "You need to have ETH in your available balance to cashout!");
+
         emit Withdraw(minter, msg.sender, availableBalances[msg.sender]);
 
         payable(msg.sender).transfer(availableBalances[msg.sender]);
